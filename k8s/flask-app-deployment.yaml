@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+  labels:
+    app: flask-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      name: flask-app
+      labels:
+        app: flask-app
+    spec:
+      containers:
+        - name: flask-app
+          image: amiranissim/hello-world-app:v1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "250m"
+          env:
+            - name: GREETING
+              valueFrom:
+                configMapKeyRef:
+                  key: GREETING
+                  name: flask-app
+            - name: SECRET_MESSAGE
+              valueFrom:
+                secretKeyRef:
+                  key: SECRET_MESSAGE
+                  name: flask-app-secret
+          livenessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            httpGet:
+              path: /
+              port: 5000
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            httpGet:
+              path: /hello
+              port: 5000
