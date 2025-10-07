@@ -1,0 +1,21 @@
+{{- if .Values.cronjob.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "hello-world-app.fullname" . }}-cronjob
+spec:
+  schedule: "{{ .Values.cronjob.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: {{ include "hello-world-app.fullname" . }}-cronjob
+              image: {{ .Values.cronjob.image }}
+              imagePullPolicy: IfNotPresent
+              args:
+                - /bin/sh
+                - -c
+                - {{ .Values.cronjob.command | quote }}
+          restartPolicy: OnFailure
+  {{- end }}
