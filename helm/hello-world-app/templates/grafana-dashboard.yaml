@@ -111,8 +111,8 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(rate(flask_app_request_count[5m])) by (endpoint)",
-              "legendFormat": "{{ "{{" }}endpoint{{ "}}" }}",
+              "expr": "sum(rate(flask_app_request_count_total[5m])) by (route)",
+              "legendFormat": "{{ "{{" }}route{{ "}}" }}",
               "refId": "A"
             }
           ],
@@ -179,7 +179,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "(sum(rate(flask_app_request_count{http_status=~\"5..\"}[5m])) / sum(rate(flask_app_request_count[5m]))) * 100",
+              "expr": "(sum(rate(flask_app_request_count_total{http_status=~\"5..\"}[5m])) / sum(rate(flask_app_request_count_total[5m]))) * 100",
               "refId": "A"
             }
           ],
@@ -269,8 +269,8 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "histogram_quantile(0.95, sum(rate(flask_app_request_latency_seconds_bucket[5m])) by (le, endpoint))",
-              "legendFormat": "p95 - {{ "{{" }}endpoint{{ "}}" }}",
+              "expr": "histogram_quantile(0.95, sum(rate(flask_app_request_latency_seconds_bucket[5m])) by (le, route))",
+              "legendFormat": "p95 - {{ "{{" }}route{{ "}}" }}",
               "refId": "A"
             },
             {
@@ -278,8 +278,8 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "histogram_quantile(0.50, sum(rate(flask_app_request_latency_seconds_bucket[5m])) by (le, endpoint))",
-              "legendFormat": "p50 - {{ "{{" }}endpoint{{ "}}" }}",
+              "expr": "histogram_quantile(0.50, sum(rate(flask_app_request_latency_seconds_bucket[5m])) by (le, route))",
+              "legendFormat": "p50 - {{ "{{" }}route{{ "}}" }}",
               "refId": "B"
             }
           ],
@@ -332,7 +332,7 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "sum(increase(flask_app_request_count[5m])) by (http_status)",
+              "expr": "sum(increase(flask_app_request_count_total[5m])) by (http_status)",
               "legendFormat": "{{ "{{" }}http_status{{ "}}" }}",
               "refId": "A"
             }

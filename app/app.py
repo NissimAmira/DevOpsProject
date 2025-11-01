@@ -11,13 +11,13 @@ app = Flask(__name__)
 REQUEST_COUNT = Counter(
     'flask_app_request_count',
     'Total number of requests',
-    ['method', 'endpoint', 'http_status']
+    ['method', 'route', 'http_status']
 )
 
 REQUEST_LATENCY = Histogram(
     'flask_app_request_latency_seconds',
     'Request latency in seconds',
-    ['method', 'endpoint']
+    ['method', 'route']
 )
 
 @app.before_request
@@ -36,13 +36,13 @@ def after_request(response):
         request_latency = time.time() - g.start_time
         REQUEST_LATENCY.labels(
             method=request.method,
-            endpoint=request.endpoint or 'unknown'
+            route=request.endpoint or 'unknown'
         ).observe(request_latency)
 
     # Record request count
     REQUEST_COUNT.labels(
         method=request.method,
-        endpoint=request.endpoint or 'unknown',
+        route=request.endpoint or 'unknown',
         http_status=response.status_code
     ).inc()
 
