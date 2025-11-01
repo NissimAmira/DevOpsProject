@@ -4,3 +4,16 @@
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 replicaCount: 3
+
+# Staging monitoring - moderate strictness, pre-production testing
+monitoring:
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+
+  prometheusRule:
+    enabled: true
+    # Moderate thresholds - catch issues before production
+    highErrorRateThreshold: 0.10  # 10% error rate
+    highLatencyThreshold: 2.0     # 2 seconds
+    podRestartThreshold: 0.02     # restarts per second

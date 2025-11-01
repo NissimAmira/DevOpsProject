@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hello-world-app-develop
+  namespace: argocd           # Argo CD itself watches this namespace
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/NissimAmira/DevOpsProject.git'
+    targetRevision: develop
+    path: helm/hello-world-app
+    helm:
+      valueFiles:
+        - values-develop.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hello-world-develop
+  syncPolicy:
+    automated:
+      prune: true               # delete resources removed from Git
+      selfHeal: true            # fix drift automatically
+    syncOptions:
+      - CreateNamespace=true    # ensure namespace exists
