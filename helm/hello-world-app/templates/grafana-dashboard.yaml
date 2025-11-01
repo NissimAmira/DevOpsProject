@@ -405,12 +405,12 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "expr": "up{job=~\".*hello-world-app.*\"}",
-              "legendFormat": "{{ "{{" }}pod{{ "}}" }}",
+              "expr": "sum(up{job=~\".*hello-world-app.*\"})",
+              "legendFormat": "Healthy Pods",
               "refId": "A"
             }
           ],
-          "title": "Pod Health Status",
+          "title": "Healthy Pods Count",
           "type": "stat"
         }
       ],
