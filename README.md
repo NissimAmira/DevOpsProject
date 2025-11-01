@@ -12,13 +12,22 @@ DevOpsProject/
 ├── app/
 │   ├── app.py
 │   └── requirements.txt
-└── k8s/
-    ├── flask-app-config-map.yaml
-    ├── flask-app-cronjob.yaml
-    ├── flask-app-deployment.yaml
-    ├── flask-app-hpa.yaml
-    ├── flask-app-secret.yaml
-    └── flask-app-service.yaml
+├── k8s/
+│   ├── flask-app-config-map.yaml
+│   ├── flask-app-cronjob.yaml
+│   ├── flask-app-deployment.yaml
+│   ├── flask-app-hpa.yaml
+│   ├── flask-app-secret.yaml
+│   └── flask-app-service.yaml
+├── helm/
+│   └── hello-world-app/
+│       ├── charts/
+│       ├── templates/
+│       ├── values.yaml
+│       └── Chart.yaml
+├── .github/
+│   └── workflows/
+│       └── piepline.yml
 ```
 
 ## Prerequisites
@@ -155,6 +164,16 @@ The application is a simple Flask web server with the following endpoints:
 - **Exposed Port:** 5000
 - **Dependencies:** Flask (from requirements.txt)
 
+## CI/CD Pipeline
+
+This project includes a GitHub Actions pipeline configured to:
+- Run `pylint` checks on push and pull requests to `test`, `staging`, and `production`
+- Test against multiple Python versions using a matrix build
+- Conditionally run a deploy stage (placeholder) when pushing to `production`
+- Fail the workflow if any linting errors are detected
+
+To see the workflow file, visit `.github/workflows/piepline.yml`.
+
 ## Troubleshooting
 
 ### Docker Issues
@@ -166,3 +185,17 @@ The application is a simple Flask web server with the following endpoints:
 - View pod logs: `kubectl logs <pod-name>`
 - Describe resources for details: `kubectl describe deployment flask-app`
 - Ensure Minikube is running: `minikube status`
+
+## Helm Chart
+
+A Helm chart is included for managing the Kubernetes deployment.
+
+- Location: `helm/hello-world-app/`
+- Includes templated deployment, service, configMap, secret, HPA, and CronJob
+- Can be packaged and published to a Helm repository or GitHub Pages
+
+To install the chart from the published GitHub Pages repo:
+```bash
+helm repo add hello-world-app https://nissimamira.github.io/DevOpsProject
+helm install hello-world-app hello-world-app/hello-world-app
+```
