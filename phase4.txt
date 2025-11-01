@@ -1,0 +1,49 @@
+Phase 4: Advanced Automation – GitOps & Monitoring
+Objective:
+Enhance your QuakeWatch deployment by implementing GitOps practices for
+continuous deployment and setting up comprehensive monitoring using Prometheus
+and Grafana.
+Tasks:
+● GitOps with ArgoCD:
+○ ArgoCD Setup:
+■ Install ArgoCD on your Kubernetes (k3s) cluster.
+■ Configure ArgoCD to track a Git repository containing your
+Kubernetes manifests (or Helm charts) for QuakeWatch.
+
+○ Auto-Sync & Deployment Management:
+■ Configure auto-sync policies so that changes in Git are
+automatically reflected in your cluster.
+■ Implement sync waves and hooks for managing complex
+deployment scenarios if needed.
+
+○ Documentation:
+■ Provide ArgoCD configuration files and a guide on how to use
+ArgoCD to manage your deployments.
+
+● Monitoring with Prometheus & Grafana:
+○ Prometheus Installation:
+■ Deploy Prometheus into your cluster to collect metrics from
+QuakeWatch and the cluster itself.
+■ Configure Prometheus to scrape metrics from your application and
+Kubernetes components.
+
+○ Grafana Setup:
+■ Install Grafana and connect it to Prometheus.
+■ Create custom dashboards that visualize application metrics (e.g.,
+CPU/memory usage, request rates, error rates) and cluster health.
+
+○ Alerting:
+■ Configure alerting rules in Prometheus to notify you when critical
+issues arise (e.g., high error rates or pod failures).
+
+○ Documentation:
+■ Document the Prometheus and Grafana setup along with sample
+dashboards and alerting configurations.
+
+Deliverables:
+● ArgoCD configuration files and a documented guide for GitOps deployment.
+● Prometheus and Grafana configuration manifests (or Helm charts) along with
+sample dashboards.
+● Documentation on the GitOps and monitoring setup, including screenshots of
+dashboards and descriptions of alerting rules.
+● Git repository with all the code

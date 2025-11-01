@@ -129,3 +129,22 @@ cronjob:
   schedule: "* * * * *"
   image: busybox:latest
   command: echo "Timestamp - $(date '+%Y-%m-%d %H:%M:%S')"
+
+# Monitoring configuration
+monitoring:
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    scrapeTimeout: 10s
+    additionalLabels:
+      release: kube-prometheus-stack
+
+  prometheusRule:
+    enabled: true
+    interval: 30s
+    additionalLabels:
+      release: kube-prometheus-stack
+    # Alert thresholds (baseline - moderate for general use)
+    highErrorRateThreshold: 0.10  # 10% error rate
+    highLatencyThreshold: 2.0     # 2 seconds
+    podRestartThreshold: 0.02     # restarts per second

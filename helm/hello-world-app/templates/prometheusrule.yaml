@@ -1,0 +1,69 @@
+{{- if .Values.monitoring.prometheusRule.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "hello-world-app.fullname" . }}
+  labels:
+    {{- include "hello-world-app.labels" . | nindent 4 }}
+    {{- with .Values.monitoring.prometheusRule.additionalLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  groups:
+    - name: {{ include "hello-world-app.fullname" . }}.rules
+      interval: {{ .Values.monitoring.prometheusRule.interval }}
+      rules:
+        # Alert when error rate (5xx) is high
+        - alert: HighErrorRate
+          expr: |
+            (
+              sum(rate(flask_app_request_count{http_status=~"5.."}[5m])) by (namespace, pod)
+              /
+              sum(rate(flask_app_request_count[5m])) by (namespace, pod)
+            ) > {{ .Values.monitoring.prometheusRule.highErrorRateThreshold }}
+          for: 2m
+          labels:
+            severity: critical
+            component: application
+          annotations:
+            summary: "High error rate detected in {{ "{{" }} $labels.namespace {{ "}}" }}/{{ "{{" }} $labels.pod {{ "}}" }}"
+            description: "Error rate is {{ "{{" }} $value | humanizePercentage {{ "}}" }} (threshold: {{ .Values.monitoring.prometheusRule.highErrorRateThreshold }})"
+
+        # Alert when pod is down
+        - alert: PodDown
+          expr: |
+            up{job="{{ include "hello-world-app.fullname" . }}"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            component: infrastructure
+          annotations:
+            summary: "Pod {{ "{{" }} $labels.pod {{ "}}" }} is down"
+            description: "Pod {{ "{{" }} $labels.pod {{ "}}" }} in namespace {{ "{{" }} $labels.namespace {{ "}}" }} has been down for more than 1 minute"
+
+        # Alert when request latency is high
+        - alert: HighLatency
+          expr: |
+            histogram_quantile(0.95,
+              sum(rate(flask_app_request_latency_seconds_bucket[5m])) by (le, namespace, pod)
+            ) > {{ .Values.monitoring.prometheusRule.highLatencyThreshold }}
+          for: 3m
+          labels:
+            severity: warning
+            component: performance
+          annotations:
+            summary: "High latency detected in {{ "{{" }} $labels.namespace {{ "}}" }}/{{ "{{" }} $labels.pod {{ "}}" }}"
+            description: "95th percentile latency is {{ "{{" }} $value {{ "}}" }}s (threshold: {{ .Values.monitoring.prometheusRule.highLatencyThreshold }}s)"
+
+        # Alert when pod restarts frequently
+        - alert: FrequentPodRestarts
+          expr: |
+            rate(kube_pod_container_status_restarts_total{pod=~"{{ include "hello-world-app.fullname" . }}.*"}[15m]) > {{ .Values.monitoring.prometheusRule.podRestartThreshold }}
+          for: 5m
+          labels:
+            severity: warning
+            component: infrastructure
+          annotations:
+            summary: "Frequent restarts detected for {{ "{{" }} $labels.pod {{ "}}" }}"
+            description: "Pod {{ "{{" }} $labels.pod {{ "}}" }} is restarting {{ "{{" }} $value {{ "}}" }} times per second"
+{{- end }}
