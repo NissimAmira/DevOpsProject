@@ -3,15 +3,13 @@ on:
   push:
     branches:
       - main
-      - test
       - staging
-      - production
+      - develop
   pull_request:
     branches:
       - main
-      - test
       - staging
-      - production
+      - develop
   workflow_dispatch:
 
 jobs:
@@ -43,5 +41,5 @@ jobs:
 
       # --- Deploy Stage ---
       - name: Deploy Stage (Production Only)
-        if: github.ref == 'refs/heads/production'
-        run: echo "Deploying to production (placeholder)"
+        if: github.ref == 'refs/heads/main'
+        run: echo "Deploying to production(main) (placeholder)"
