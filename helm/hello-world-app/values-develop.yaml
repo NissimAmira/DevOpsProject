@@ -4,3 +4,16 @@
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 replicaCount: 1
+
+# Development monitoring - very lenient, for testing
+monitoring:
+  serviceMonitor:
+    enabled: true
+    interval: 60s  # Scrape less frequently to save resources
+
+  prometheusRule:
+    enabled: true
+    # Very lenient thresholds - devs are testing, errors expected
+    highErrorRateThreshold: 0.50  # 50% error rate tolerated
+    highLatencyThreshold: 5.0     # 5 seconds - not critical in dev
+    podRestartThreshold: 0.05     # Allow more restarts during development
