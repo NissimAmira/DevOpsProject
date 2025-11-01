@@ -39,9 +39,9 @@ jobs:
       - name: Run pylint
         run: pylint app/app.py
 
-      # --- Build & Push Docker Image ---
+      # --- Build & Push Docker Image (only on push after merge, not on PRs) ---
       - name: Build and Push Docker Image
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/develop'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/develop')
         run: |
           # Determine image tag based on branch
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
@@ -52,11 +52,11 @@ jobs:
             TAG="develop-${{ github.sha }}"
           fi
 
-          echo "Building image with tag: $TAG"
+          echo "🔨 Building Docker image with tag: $TAG"
           docker build -t amiranissim/hello-world-app:$TAG .
 
           # Push to Docker Hub (requires DOCKERHUB_USERNAME and DOCKERHUB_TOKEN secrets)
           # echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
           # docker push amiranissim/hello-world-app:$TAG
 
-          echo "✅ Image built successfully. GitOps (ArgoCD) will handle deployment."
+          echo "✅ Image built. ArgoCD will sync and deploy changes automatically."
