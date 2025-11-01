@@ -39,7 +39,24 @@ jobs:
       - name: Run pylint
         run: pylint app/app.py
 
-      # --- Deploy Stage ---
-      - name: Deploy Stage (Production Only)
-        if: github.ref == 'refs/heads/main'
-        run: echo "Deploying to production(main) (placeholder)"
+      # --- Build & Push Docker Image ---
+      - name: Build and Push Docker Image
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/develop'
+        run: |
+          # Determine image tag based on branch
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            TAG="v1.1.1"
+          elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
+            TAG="staging-${{ github.sha }}"
+          else
+            TAG="develop-${{ github.sha }}"
+          fi
+
+          echo "Building image with tag: $TAG"
+          docker build -t amiranissim/hello-world-app:$TAG .
+
+          # Push to Docker Hub (requires DOCKERHUB_USERNAME and DOCKERHUB_TOKEN secrets)
+          # echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          # docker push amiranissim/hello-world-app:$TAG
+
+          echo "✅ Image built successfully. GitOps (ArgoCD) will handle deployment."
