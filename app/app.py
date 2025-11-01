@@ -1,9 +1,9 @@
 """Flask app for returning Hello World and GREETING values."""
 
 import os
-from flask import Flask, Response
-from prometheus_client import Counter, Histogram, generate_latest, REGISTRY
 import time
+from flask import Flask, Response, g, request
+from prometheus_client import Counter, Histogram, generate_latest, REGISTRY
 
 app = Flask(__name__)
 
@@ -23,14 +23,11 @@ REQUEST_LATENCY = Histogram(
 @app.before_request
 def before_request():
     """Record request start time."""
-    from flask import g
     g.start_time = time.time()
 
 @app.after_request
 def after_request(response):
     """Record metrics after each request."""
-    from flask import g, request
-
     # Calculate request duration
     if hasattr(g, 'start_time'):
         request_latency = time.time() - g.start_time
