@@ -5,6 +5,11 @@ on:
       - test
       - staging
       - production
+  pull_request:
+    branches:
+      - test
+      - staging
+      - production
   workflow_dispatch:
 
 jobs:
